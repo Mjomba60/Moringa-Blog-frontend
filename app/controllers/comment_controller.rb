@@ -1,4 +1,4 @@
-class CommentsController < Sinatra::Base
+class CommentsController < ApplicationController
     post '/comments' do
       comment = Comment.new(comment_params)
       comment.user = current_user
