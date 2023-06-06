@@ -13,7 +13,7 @@ class UsersController < Sinatra::Base
         if user.save
           message: "Signup successful".to_json
         else
-          message: "Please try again".to_json
+          message: "Please signup to continue".to_json
           redirect_to '/signup'
         end
       end
@@ -42,7 +42,6 @@ class UsersController < Sinatra::Base
     
     delete '/users/:id' do
         user = User.find(params[:id])
-
         if user.destroy
             message: "User deleted".to_json
         else
