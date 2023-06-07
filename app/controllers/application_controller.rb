@@ -69,7 +69,13 @@ patch 'articles/:id' do
     article.to_json
 end
 
-post '/comments' do
+get '/articles/:article_id/comments' do
+  article_id = params[:article_id]
+  comments = Comment.where(article_id: article_id)
+  comments.to_json
+end
+
+post '/articles/:article_id/comments' do
   comment = Comment.new(comment_params)
   comment.user = current_user
   comment.article = current_article
