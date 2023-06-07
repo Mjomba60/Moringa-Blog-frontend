@@ -39,7 +39,6 @@ class UsersController < Sinatra::Base
         user = User.find(params[:id])
         user.to_json
       end
-      end
 
     #DELETE /users/:id
     
@@ -52,6 +51,7 @@ class UsersController < Sinatra::Base
             message: "failed to delete user".to_json
 
     end
+  end
 
 private
     def user_params
