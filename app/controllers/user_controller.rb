@@ -12,7 +12,9 @@ class UsersController < Sinatra::Base
         
         if user.save
           message: "Signup successful".to_json
+        
         else
+          status 400
           message: "Please signup to continue".to_json
           redirect_to '/signup'
         end
@@ -26,6 +28,7 @@ class UsersController < Sinatra::Base
         if user && BCrypt::Password.new(user.password_digest) == password
             message: "password is correct".to_json
         else
+          status 401
             message: "incorrect password".to_json
 
         end
@@ -45,6 +48,7 @@ class UsersController < Sinatra::Base
         if user.destroy
             message: "User deleted".to_json
         else
+          status 500
             message: "failed to delete user".to_json
 
     end
