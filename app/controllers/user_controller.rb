@@ -11,11 +11,11 @@ class UsersController < Sinatra::Base
         user.password_digest = BCrypt::Password.create(params[:user][:password])
         
         if user.save
-          message: "Signup successful".to_json
+          {message: "Signup successful"}.to_json
         
         else
           status 400
-          message: "Please signup to continue".to_json
+          {message: "Please signup to continue"}.to_json
           redirect_to '/signup'
         end
       end
@@ -26,10 +26,10 @@ class UsersController < Sinatra::Base
         user = User.find_by(user_name: params[:username])
 
         if user && BCrypt::Password.new(user.password_digest) == password
-            message: "password is correct".to_json
+            {message: "password is correct"}.to_json
         else
           status 401
-            message: "incorrect password".to_json
+            {message: "incorrect password"}.to_json
 
         end
       end
@@ -45,10 +45,10 @@ class UsersController < Sinatra::Base
     delete '/users/:id' do
         user = User.find(params[:id])
         if user.destroy
-            message: "User deleted".to_json
+            {message: "User deleted"}.to_json
         else
           status 500
-            message: "failed to delete user".to_json
+            {message: "failed to delete user"}.to_json
 
     end
   end
