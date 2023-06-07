@@ -30,7 +30,19 @@ class ApplicationController < Sinatra::Base
       end
   end
 
-  #get users
+  #get all users
+  get '/users' do
+    users = User.all
+    users.to_json
+  end
+
+  get '/articles' do
+    articles = Article.all
+    articles.to_json(include: {comments: {include: :user} })
+  end
+
+
+
   get '/users/:id' do
     user = User.find(params[:id])
     user.to_json
