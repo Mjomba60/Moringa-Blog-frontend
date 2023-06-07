@@ -6,4 +6,134 @@ class ApplicationController < Sinatra::Base
     { message: "Good luck with your project!" }.to_json
   end
 
+  post '/users' do
+    user = User.new(user_params)
+    user.password_digest = BCrypt::Password.create(params[:user][:password])
+    
+    if user.save
+      message = "Signup successful".to_json
+    else
+      message = "Please signup to continue".to_json
+      redirect_to '/signup'
+    end
+  end
+    #password_digest handles password encryption and authenitcation 
+    #The bcrypt gem is used to handle these
+
+  post 'users/authenticate' do
+    user = User.find_by(user_name: params[:username])
+
+    if user && BCrypt::Password.new(user.password_digest) == password
+        message = "password is correct".to_json
+    else
+        message = "incorrect password".to_json
+      end
+  end
+
+  #get users
+  get '/users/:id' do
+    user = User.find(params[:id])
+    user.to_json
+  end
+
+
+#DELETE /users/:id
+
+delete '/users/:id' do
+    user = User.find(params[:id])
+    if user.destroy
+        message = "User deleted".to_json
+    else
+        message = "failed to delete user".to_json
+    end
+  end
+
+  get '/articles' do
+    articles = Article.all
+    articles.to_json(include: {comments: {include: :user} })
+  end
+
+  get '/articles/:id' do
+    article = Article.find(params[:id])
+    article.to_json(include: {comments: {include: :user} })
+  end
+
+post '/articles' do
+    article = Article.create(params)
+    article.to_json(include: {comments: {include: :user} })
+end
+
+patch 'articles/:id' do
+    article = Article.find(params[:id])
+    article.update(params)
+    article.to_json
+end
+
+get '/articles/:article_id/comments' do
+  article_id = params[:article_id]
+  comments = Comment.where(article_id: article_id)
+  comments.to_json
+end
+
+post '/articles/:article_id/comments' do
+  article_id = params[:article_id]
+  user_id = params[:user_id]
+  comments = params[:comments]
+
+  comment = Comment.new(article_id: article_id, user_id: user_id, comments: comments)
+
+  if comment.save
+    comment.to_json
+  else
+    status 500
+    { error: 'Error saving comment' }.to_json
+  end
+end
+
+delete '/articles/:article_id/comments/:comment_id' do
+  article_id = params[:article_id]
+  comment_id = params[:comment_id]
+
+  comment = Comment.find_by(id: comment_id, article_id: article_id)
+
+  if comment.nil?
+    status 404
+    { error: 'Comment not found' }.to_json
+  else
+    comment.destroy
+    { message: 'Comment deleted successfully' }.to_json
+  end
+end
+
+  def like
+    article = Article.find(params[:article_id])
+    article.likes.create(user_id: current_user.id, interaction_type: 'like')
+    article.increment!(:total_likes)
+    redirect_to article_path(article)
+end
+
+def dislike
+    article = Article.find(params[:article_id])
+    article.likes.create(user_id: current_user.id, interaction_type: 'dislike')
+    article.decrement!(:total_likes)
+    redirect_to article_path(article)
+end
+
+  private
+    def user_params
+      params.require(:user).permit(:first_name, :last_name, :user_name, :email, :password)
+    end
+
+    def comment_params
+      params.require(:comment).permit(:content)
+    end
+
+    def current_user
+      User.find(session[:user_id]) if session[:user_id]
+    end      
+
+    def current_article
+      Article.find(params[:article_id]) if params[:article_id]
+    end
+
 end
