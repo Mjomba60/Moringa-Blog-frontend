@@ -6,20 +6,20 @@ class ArticleController < ApplicationController
         articles.to_json(include: {comments: {include: :user} })
     end
 
-    get '/articles/:id'
+    get '/articles/:id' do
         article = Article.find(params[:id])
         article.to_json(include: {comments: {include: :user} })
     end
 
-    post '/articles'
+    post '/articles' do
         article = Article.create(params)
         article.to_json(include: {comments: {include: :user} })
     end
 
-    patch 'articles/:id'
+    patch 'articles/:id' do
         article = Article.find(params[:id])
         article.update(params)
         article.to_json
     end
-    
+
 end
