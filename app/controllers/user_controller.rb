@@ -7,7 +7,7 @@ class UsersController < Sinatra::Base
   
 
         post '/users' do
-        user = User.new(user_params)
+        user = User.new(user_params(params[:user]))
         user.password_digest = BCrypt::Password.create(params[:user][:password])
         
         if user.save
@@ -22,8 +22,9 @@ class UsersController < Sinatra::Base
         #password_digest handles password encryption and authenitcation 
         #The bcrypt gem is used to handle these
 
-      post 'users/authenticate' do
+      post '/users/authenticate' do
         user = User.find_by(user_name: params[:username])
+        password = params[:password]
 
         if user && BCrypt::Password.new(user.password_digest) == password
             {message: "password is correct"}.to_json
@@ -54,7 +55,7 @@ class UsersController < Sinatra::Base
   end
 
 private
-    def user_params
+    def user_params(params)
     params.require(:user).permit(:first_name, :last_name, :user_name, :email, :password)
 end
 end
