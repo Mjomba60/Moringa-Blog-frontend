@@ -108,10 +108,9 @@ post '/articles' do
     article.to_json(include: {comments: {include: :user} })
 end
 
-patch 'articles/:id' do
-    article = Article.find(params[:id])
-    article.update(params)
-    article.to_json
+put '/articles/:id' do
+  article = Article.update(params[:id], params.filter{|k, v| v != params})
+  article.to_json
 end
 
 get '/articles/:article_id/comments' do
