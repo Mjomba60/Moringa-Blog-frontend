@@ -75,15 +75,32 @@ get '/articles/:article_id/comments' do
 end
 
 post '/articles/:article_id/comments' do
-  comment = Comment.new(comment_params)
-  comment.user = current_user
-  comment.article = current_article
+  article_id = params[:article_id]
+  user_id = params[:user_id]
+  comments = params[:comments]
+
+  comment = Comment.new(article_id: article_id, user_id: user_id, comments: comments)
 
   if comment.save
-    redirect "/articles/#{comment.article_id}" 
+    comment.to_json
   else
-    flash[:error] = 'Error saving comment'
-    redirect back 
+    status 500
+    { error: 'Error saving comment' }.to_json
+  end
+end
+
+delete '/articles/:article_id/comments/:comment_id' do
+  article_id = params[:article_id]
+  comment_id = params[:comment_id]
+
+  comment = Comment.find_by(id: comment_id, article_id: article_id)
+
+  if comment.nil?
+    status 404
+    { error: 'Comment not found' }.to_json
+  else
+    comment.destroy
+    { message: 'Comment deleted successfully' }.to_json
   end
 end
 
