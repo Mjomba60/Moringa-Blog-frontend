@@ -6,17 +6,62 @@ class ApplicationController < Sinatra::Base
     { message: "Good luck with your project!" }.to_json
   end
 
-  post '/users' do
-    user = User.new(user_params)
-    user.password_digest = BCrypt::Password.create(params[:user][:password])
-    
+  post '/signup' do
+    first_name = params[:first_name]
+    last_name = params[:last_name]
+    user_name = params[:user_name]
+    email = params[:email]
+    password = params[:password]
+  
+    encrypted_password = BCrypt::Password.create(password)
+  
+    user = User.new(first_name: first_name, last_name: last_name, user_name: user_name, email: email, password: encrypted_password)
+  
     if user.save
-      message = "Signup successful".to_json
+      redirect '/articles'
     else
-      message = "Please signup to continue".to_json
-      redirect_to '/signup'
+      redirect '/signup'
     end
   end
+  
+  post '/login' do
+    user_name = params[:user_name]
+    password = params[:password]
+  
+    user = User.find_by(user_name: user_name)
+  
+    if user && BCrypt::Password.new(user.password) == password
+      session[:user_id] = user.id
+      redirect '/articles'
+    else
+      redirect '/login'
+    end
+  end
+  
+  post '/users' do
+    first_name = params[:first_name]
+    last_name = params[:last_name]
+    user_name = params[:user_name]
+    email = params[:email]
+    password = params[:password]
+  
+    user = User.new(
+      first_name: first_name,
+      last_name: last_name,
+      user_name: user_name,
+      email: email,
+      password: password
+    )
+  
+    if user.save
+      status 201
+      user.to_json
+    else
+      status 500
+      { error: 'Error saving user' }.to_json
+    end
+  end
+  
     #password_digest handles password encryption and authenitcation 
     #The bcrypt gem is used to handle these
 
