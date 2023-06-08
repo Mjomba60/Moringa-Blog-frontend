@@ -16,9 +16,8 @@ class ArticleController < ApplicationController
         article.to_json(include: {comments: {include: :user} })
     end
 
-    patch 'articles/:id' do
-        article = Article.find(params[:id])
-        article.update(params)
+    put '/articles/:id' do
+        article = Article.update(params[:id], params.filter{|k, v| v != params})
         article.to_json
     end
 
