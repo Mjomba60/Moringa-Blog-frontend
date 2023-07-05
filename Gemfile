@@ -27,7 +27,7 @@ gem "activerecord", "~> 6.1"
 gem "sinatra-activerecord", "~> 2.0"
 
 #faker
-gem 'faker'
+
 
 # Run common tasks from the command line
 # https://github.com/ruby/rake
@@ -40,6 +40,9 @@ gem "sqlite3", "~> 1.4"
 gem "require_all", "~> 3.0"
 
  gem 'bcrypt', '~> 3.1.7'
+
+ gem 'rails'
+
 
 # These gems will only be used when we are running the application locally
 group :development do
