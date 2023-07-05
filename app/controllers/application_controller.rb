@@ -131,6 +131,27 @@ class ApplicationController < Sinatra::Base
     article.to_json(include: { comments: { include: :user } })
   end
 
+  # delete "/articles/:id" do
+  #   article = Article.find(params[:id])
+    
+  #   if article.destroy
+  #     # render json: { message: 'Article deleted successfully' }
+  #     header :no_content
+  #   else
+  #     render json: { error: 'Failed to delete the article' }, status: :unprocessable_entity
+  #   end
+  # end
+  delete "/articles/:id" do
+    article = Article.find(params[:id])
+  
+    if article.destroy
+      { message: 'Article deleted successfully' }.to_json
+    else
+      { error: 'Failed to delete the article' }.to_json
+    end
+  end
+  
+
   post "/articles" do
     article = Article.create(params)
     article.to_json(include: { comments: { include: :user } })
