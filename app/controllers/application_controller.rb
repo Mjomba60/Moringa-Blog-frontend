@@ -153,7 +153,7 @@ class ApplicationController < Sinatra::Base
     likes.to_json
   end
 
-  post "/articles/:article_id/like" do
+  post "/articles/:article_id/interaction" do
     article_id = params[:article_id]
     user_id = params[:user_id]
     interaction_type = params[:interaction_type] # Should be either 'like' or 'dislike'
